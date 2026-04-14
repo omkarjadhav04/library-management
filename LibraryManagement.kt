@@ -1,70 +1,125 @@
-fun main() {
+import java.util.*
 
-    // Store books with author
-    val books = mutableListOf(
-        "Wings of Fire - A.P.J Abdul Kalam",
-        "Harry Potter - J.K Rowling",
-        "The Alchemist - Paulo Coelho",
-        "Rich Dad Poor Dad - Robert Kiyosaki",
-        "Ikigai - Hector Garcia"
-    )
+data class Book(
+    val id: Int,
+    val title: String,
+    val author: String,
+    var isIssued: Boolean = false
+)
+
+class LibraryManagementSystem {
+
+    private val books = mutableListOf<Book>()
+
+    fun addBook() {
+        val scanner = Scanner(System.`in`)
+
+        print("Enter Book ID: ")
+        val id = scanner.nextInt()
+        scanner.nextLine()
+
+        print("Enter Book Title: ")
+        val title = scanner.nextLine()
+
+        print("Enter Author Name: ")
+        val author = scanner.nextLine()
+
+        books.add(Book(id, title, author))
+        println("Book added successfully!")
+    }
+
+    fun viewBooks() {
+        println("\n--- Book List ---")
+        if (books.isEmpty()) {
+            println("No books available.")
+            return
+        }
+
+        books.forEach {
+            println("ID: ${it.id}, Title: ${it.title}, Author: ${it.author}, Issued: ${it.isIssued}")
+        }
+    }
+
+    fun issueBook() {
+        val scanner = Scanner(System.`in`)
+        print("Enter Book ID to issue: ")
+        val id = scanner.nextInt()
+
+        val book = books.find { it.id == id }
+
+        if (book == null) {
+            println("Book not found!")
+        } else if (book.isIssued) {
+            println("Book already issued!")
+        } else {
+            book.isIssued = true
+            println("Book issued successfully!")
+        }
+    }
+
+    fun returnBook() {
+        val scanner = Scanner(System.`in`)
+        print("Enter Book ID to return: ")
+        val id = scanner.nextInt()
+
+        val book = books.find { it.id == id }
+
+        if (book == null) {
+            println("Book not found!")
+        } else if (!book.isIssued) {
+            println("This book was not issued!")
+        } else {
+            book.isIssued = false
+            println("Book returned successfully!")
+        }
+    }
+
+    fun searchBook() {
+        val scanner = Scanner(System.`in`)
+        print("Enter Book Title to search: ")
+        val title = scanner.nextLine()
+
+        val foundBooks = books.filter { it.title.contains(title, ignoreCase = true) }
+
+        if (foundBooks.isEmpty()) {
+            println("No matching books found.")
+        } else {
+            println("\n--- Search Results ---")
+            foundBooks.forEach {
+                println("ID: ${it.id}, Title: ${it.title}, Author: ${it.author}, Issued: ${it.isIssued}")
+            }
+        }
+    }
+}
+
+fun main() {
+    val library = LibraryManagementSystem()
+    val scanner = Scanner(System.`in`)
 
     while (true) {
         println("\n--- Library Management System ---")
         println("1. Add Book")
         println("2. View Books")
-        println("3. Remove Book")
-        println("4. Exit")
-        print("Enter your choice: ")
+        println("3. Issue Book")
+        println("4. Return Book")
+        println("5. Search Book")
+        println("6. Exit")
+        print("Enter choice: ")
 
-        val choice = readLine()?.toIntOrNull()
-
-        when (choice) {
-
-            1 -> {
-                print("Enter book name: ")
-                val name = readLine()
-
-                print("Enter author name: ")
-                val author = readLine()
-
-                if (!name.isNullOrEmpty() && !author.isNullOrEmpty()) {
-                    books.add("$name - $author")
-                    println("Book added successfully.")
-                } else {
-                    println("Invalid input.")
-                }
+        when (scanner.nextInt()) {
+            1 -> library.addBook()
+            2 -> library.viewBooks()
+            3 -> library.issueBook()
+            4 -> library.returnBook()
+            5 -> {
+                scanner.nextLine() // clear buffer
+                library.searchBook()
             }
-
-            2 -> {
-                println("\nList of Books:")
-                if (books.isEmpty()) {
-                    println("No books available.")
-                } else {
-                    for (i in books.indices) {
-                        println("${i + 1}. ${books[i]}")
-                    }
-                }
-            }
-
-            3 -> {
-                print("Enter book number to remove: ")
-                val index = readLine()?.toIntOrNull()
-
-                if (index != null && index > 0 && index <= books.size) {
-                    val removed = books.removeAt(index - 1)
-                    println("$removed removed successfully.")
-                } else {
-                    println("Invalid number.")
-                }
-            }
-
-            4 -> {
-                println("Exiting program...")
+            6 -> {
+                println("Exiting...")
                 break
             }
-
-            else -> println("Invalid choice. Try again.")
+            else -> println("Invalid choice!")
         }
     }
 }
